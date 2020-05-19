@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<flow name="InvokeNonMethodFlow" doc:id="a15c58bb-7b86-4a51-bfef-2f8213a7f05f" >
+		<http:listener doc:name="Listener" doc:id="19555799-62b1-43e4-9cfa-b25edbeb23bc" config-ref="HTTP_Listener_config" path="/getprice"/>
+		<java:new constructor="StockQuoteService()" doc:name="New" doc:id="00792d8b-4b25-43d9-bf3a-c5154eca498e" class="com.way2learnonline.StockQuoteService" target="sqs"/>
+		<java:invoke doc:name="Invoke" doc:id="e329a8a6-9362-4ba3-bdc8-fb00d509c82c" instance="#[vars.sqs]" class="com.way2learnonline.StockQuoteService" method="getStockPrice(java.lang.String)">
+			<java:args ><![CDATA[#[{
+	stockSymbol: attributes.queryParams.stock as String
+}]]]></java:args>
+		</java:invoke>
+	</flow>
+	<flow name="InvokeStaticMethodFlow" doc:id="77ad36ca-2527-47ea-a6a5-d3d03c2e8c0e" >
+		<http:listener doc:name="Listener" doc:id="f3a3a8cf-e26c-4d0f-b7e7-dff39fc87eed" config-ref="HTTP_Listener_config" path="/sayhello/{city}" outputMimeType="text/plain"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="24d2f103-af49-4cd4-aa84-a96659918006" class="com.way2learnonline.StockQuoteService" method="sayHello(java.lang.String,java.lang.String)">
+			<java:args ><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+	name: attributes.queryParams.name as String,
+	city: attributes.uriParams.city as String
+}]]]></java:args>
+		</java:invoke-static>
+	</flow>
+</mule>

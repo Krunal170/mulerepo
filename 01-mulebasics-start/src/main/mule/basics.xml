@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="001fee41-ef1e-4aa4-8f3f-4547c81ea09c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	
+	<flow name="basicsFlow" doc:id="855cb42c-2252-4ae0-ac3a-48c43598f27f" >
+		<http:listener doc:name="Listener" doc:id="ff4d0c2d-660a-49ee-a1f0-4ba9cc963268" config-ref="HTTP_Listener_config" path="/hello/{city}" outputMimeType="text/plain"/>
+		<set-variable value="#[attributes.uriParams.city]" doc:name="Set Variable" doc:id="7811ea90-532d-4fa3-872e-e80ff0f72f03" variableName="city"/>
+		<set-payload value="#['Hello World ' ++ attributes.queryParams.name as String ++ 'from city : ' ++ attributes.uriParams.city as String]" doc:name="Set Payload" doc:id="f296e8c7-ef4b-4cbc-8f92-ef56bf562b5d" />
+		<logger level="INFO" doc:name="Logger" doc:id="b4a2dd7c-0a6a-4a58-b8b1-14a64330abb3" message="#['Logging Krunal..' ++ vars.city as String]"/>
+	</flow>
+</mule>

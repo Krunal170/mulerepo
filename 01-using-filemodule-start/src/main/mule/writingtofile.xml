@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="707833cd-bcbe-44f1-883a-8c390d0afccb" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="writingtofileFlow" doc:id="e4921129-c4aa-4cb2-ad7e-4781f6163c9c" >
+		<http:listener doc:name="Listener" doc:id="c3afa188-c985-4df7-88a9-7e5f6469eb8c" config-ref="HTTP_Listener_config" path="/write"/>
+		<ee:transform doc:name="Transform Message" doc:id="70c68cde-f096-4edd-a93b-c0cd13cc85ae" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv headerLineNumber = 0 , header = true
+---
+[{
+	product_id: attributes.queryParams.pid as String,
+	product_name: attributes.queryParams.pname as String,
+	price: attributes.queryParams.price as Number
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:name="Write" doc:id="92c144f7-8871-4a0b-a467-8c10b3bf46db" config-ref="File_Config" path="write/products.csv" mode="APPEND"/>
+	</flow>
+</mule>
